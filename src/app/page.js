@@ -1,113 +1,297 @@
-import Image from 'next/image'
+'use client'
+import { useState } from 'react'
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+  
+  // variables
+  const locations = [
+    {
+      name: "town square",
+    "button text": ["Go to store", "Go to cave", "Fight dragon"],
+    "button functions": [goStore, goCave, fightDragon],
+    text: "You are in the town square. You see a sign that says \"Store\"."
+  },
+  {
+    name: "store",
+    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Go to town square"],
+    "button functions": [buyHealth, buyWeapon, goTown],
+    text: "You enter the store."
+  },
+  {
+    name: "cave",
+    "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
+    "button functions": [fightSlime, fightBeast, goTown],
+    text: "You enter the cave. You see some monsters."
+  },
+  {
+    name: "fight",
+    "button text": ["Attack", "Dodge", "Run"],
+    "button functions": [attack, dodge, goTown],
+    text: "You are fighting a monster."
+  },
+  {
+    name: "defeat monster",
+    "button text": ["Go to town square", "Go to town square", "Go to town square"],
+    "button functions": [goTown, goTown, goTown],
+    text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
+  },
+  {
+    name: "lose",
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
+    "button functions": [restart, restart, restart],
+    text: "You die. ☠️"
+  },
+  {
+    name: "win",
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
+    "button functions": [restart, restart, restart],
+    text: "You defeat the dragon! YOU WIN THE GAME! 🎉."
+  }
+];
+const weapons = [
+  { name: 'stick', power: 5 },
+  { name: 'dagger', power: 30 },
+  { name: 'claw hammer', power: 50 },
+  { name: 'sword', power: 100 }
+];
+const monsters = [
+  {
+    name: "slime",
+    level: 2,
+    health: 15
+  },
+  {
+    name: "fanged beast",
+    level: 8,
+    health: 60
+  },
+  {
+    name: "dragon",
+    level: 20,
+    health: 300
+  }
+]
+// let fightings;
+
+
+// states
+const [xp,setXp] =useState(0) ;
+const [health,sethealth] =useState(100); 
+const [gold,setgold] =useState(50) ;
+const [btn1,setbtn1] =useState("Go to store") 
+const [btn2,setbtn2] =useState("Go to cave") 
+const [btn3,setbtn3] =useState("Fight dragon")  
+const [text,setText] =useState("Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.") 
+const [inventory,setInventory]= useState(["stick"])
+const [monsterName,setMonsterName]= useState("")
+const[monsterHealth,setMonsterHealth] = useState(0)
+const [monsterStat, setMonsterStat]= useState(false)
+// const [currentWeapon,setCurrentWeapon]= useState(0)
+const [fighting,setFighting]= useState(0)
+let currentWeapon = 0
+// functions
+function update  (location){
+  setMonsterStat(false)
+  // setMonsterHealth(0)
+  // setMonsterName("")
+  setbtn1(location["button text"][0])
+  setbtn2(location["button text"][1])
+  setbtn3(location["button text"][2])
+  setText(location.text)
+}
+// const onclick2 = () =>{
+//     switch(btn1){
+//     case "Go to cave":
+//     {goCave()}
+//     break;
+//     case "Buy weapon (30 gold)":
+//     {buyWeapon()}
+//     break;
+//     case "Fight fanged beast":
+//     {fightBeast()}
+//     break;
+//     case "Dodge":
+//     {dodge()}
+//     break;
+//     case "sell weapon for (15 gold)":
+//     {sellWeapon}
+//     break;
+//   }}
+const onclick1=()=>{
+for(let i=0;i<locations.length;i++){
+  if(btn1 === locations[i]["button text"][0]){
+      locations[i]["button functions"][0]()
+  }
+  
+}
+}
+const onclick2 = () =>{
+  for(let i=0;i<locations.length;i++){
+    if(btn2 === locations[i]["button text"][1]){
+        locations[i]["button functions"][1]()
+      } if(btn2 === "sell weapon for (15 gold)"){
+        sellWeapon()
+        break;
+    } 
+     
+  }
+  }
+const onclick3=()=>{
+  for(let i=0;i<locations.length;i++){
+    if(btn3 === locations[i]["button text"][2]){
+        locations[i]["button functions"][2]()
+        break;
+    }
+    
+  }
+}
+
+function goStore(){
+  update(locations[1])
+}
+function goFight(fight){
+  setFighting(fight)
+  update(locations[3]);
+  setMonsterStat(true)
+  setMonsterName(monsters[fight].name)
+  setMonsterHealth(monsters[fight].health)
+}
+
+function fightBeast(){
+  // setFighting(1)
+  goFight(1)
+}
+function fightSlime(){
+  // setFighting(0)
+  goFight(0)
+}
+function fightDragon(){
+  // setFighting(2)
+  goFight(2)
+}
+  
+function attack(){
+  if(health > 0 && monsterHealth > 0 ){
+    console.log(inventory)
+  setText("The "+monsterName+" attacks. You attack it with your "+weapons[inventory.length-1].name)
+  sethealth(health - getMonsterAttackValue(monsters[fighting].level))
+  console.log(inventory)
+  if(isMonsterHit()){
+  setMonsterHealth(monsterHealth - (weapons[inventory.length-1].power+ Math.floor(Math.random()* xp)+1))
+  }else{setText("You miss..")}
+}
+if (Math.random() <= .1 && inventory.length !== 1) {
+  setText( " Your " + inventory.pop() + " breaks.");
+  // setCurrentWeapon(currentWeapon-1);
+}
+if (health <= 0 && health < monsterHealth){
+  lose()
+}else if (monsterHealth <= 0){
+  fighting === 2 ? winGame() : defeatMonster()
+}
+}
+function getMonsterAttackValue(level) {
+  const hit = (level * 5) - (Math.floor(Math.random() * xp));
+  // console.log(hit);
+  return hit > 0 ? hit : 0;
+}
+
+const isMonsterHit=()=>{
+  return Math.random() > .2 || health < 20;
+
+}
+function dodge(){
+  setText("You dodge the attack from "+monsterName)
+}
+const defeatMonster = () =>{
+  setgold(gold + Math.floor(monsters[fighting].level*6.7))
+  setXp(xp + monsters[fighting].level)
+    update(locations[4])
+}
+const lose =()=>{
+  update(locations[5])
+}
+const winGame =()=>{
+  update(locations[6])
+}
+function restart(){
+  // setCurrentWeapon(0)
+  setXp(0)
+  setgold(50)
+  sethealth(100)
+  setInventory(["stick"])
+  goTown()
+}
+
+function buyHealth(){
+  if(gold <= 9){
+    setText("You don't have enough gold")
+  }else{
+    sethealth(health+10)
+    setgold(gold-10)}
+}
+function buyWeapon(){
+    if (inventory.length < weapons.length){
+      if(gold >= 30){
+
+        let boughtOne = weapons[inventory.length].name
+      inventory.push(boughtOne)
+      // console.log(currentWeapon)
+      setText("you now have a " + boughtOne + ". In your inventory you have: "+ inventory)
+      setgold(gold-30)
+      }else{
+        setText("You don't have enough gold to buy a weapon")
+      }
+    }else{
+      setText("You have the most powerful weapon")
+      setbtn2("sell weapon for (15 gold)")
+
+    }
+}
+
+const sellWeapon=()=>{
+  if(inventory.length > 1){
+    let soldOne = inventory.pop();
+    setgold(gold + 15)
+    console.log(soldOne)
+    setText("you sold your " + soldOne+" .In your inventory you have " + inventory)
+  }else{
+    setText("Don't sell your only weapon")
+  }
+}
+function goCave(){
+  update(locations[2])
+}
+function goTown(){
+  update(locations[0])
+}
+return(
+    <main>
+      <div className='bg-white max-w-lg max-h-96 mt-2 mx-auto mb-0 p-2' >
+        <div id = "stats" className='border-black border-2 p-1 text-[#0a0a23] flex'>
+         <span className='mr-2'> xp:{xp}</span>
+          <span className='mr-2'>health:{health}</span>
+          <span className='mr-2'>gold:{gold}</span>
         </div>
+        <div id="controls" className='border-black border-2 p-1 text-[#0a0a23]'>
+
+          {/* button1 */}
+          <button onClick={onclick1} className='text-[#0a0a23] bg-[#feac32] bg-gradient-to-r from-[#fecc4c] to-[#ffac33] border-[#feac32] border-2 m-1 text-xs'>{btn1}</button>
+
+            {/* button2 */}
+          <button onClick={onclick2} className='text-[#0a0a23] bg-[#feac32] bg-gradient-to-r from-[#fecc4c] to-[#ffac33] border-[#feac32] border-2 m-1 text-xs'>{btn2}</button>
+
+            {/* button3 */}
+          <button onClick={onclick3} className='text-[#0a0a23] bg-[#feac32] bg-gradient-to-r from-[#fecc4c] to-[#ffac33] border-[#feac32] border-2 m-1 text-xs'>{btn3}</button>
+        </div>
+        <div className={`bg-[#c70d0d] text-white border-2 border-black ${ monsterStat ? "block" : "hidden"} `}>
+          <span className='m-1'>monsterName: {monsterName}</span> 
+          <span className='m-1'>health: {monsterHealth}</span>
+        </div>
+        <div id = "text" class="bg-[#0a0a23] text-white p-2 ">{text}</div>
       </div>
+        
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+  </main>
+)
 }
